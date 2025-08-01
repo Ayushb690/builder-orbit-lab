@@ -10,7 +10,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   useEffect(() => {
     // Check if subjects are configured
-    const savedSubjects = localStorage.getItem('attendanceApp_subjects');
+    const savedSubjects = localStorage.getItem("attendanceApp_subjects");
     const subjects = savedSubjects ? JSON.parse(savedSubjects) : [];
     setIsSetupComplete(subjects.length > 0);
   }, []);

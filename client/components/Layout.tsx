@@ -1,14 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ReactNode } from "react";
-import { 
-  Calendar,
-  BookOpen,
-  BarChart3,
-  Home,
-  Menu,
-  X
-} from "lucide-react";
+import { Calendar, BookOpen, BarChart3, Home, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -48,7 +41,8 @@ export default function Layout({ children }: LayoutProps) {
                       to={item.href}
                       className={cn(
                         "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
-                        location.pathname === item.href && "bg-muted text-primary"
+                        location.pathname === item.href &&
+                          "bg-muted text-primary",
                       )}
                     >
                       <Icon className="h-4 w-4" />
@@ -87,7 +81,8 @@ export default function Layout({ children }: LayoutProps) {
                     to={item.href}
                     className={cn(
                       "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted",
-                      location.pathname === item.href && "bg-muted text-primary font-medium"
+                      location.pathname === item.href &&
+                        "bg-muted text-primary font-medium",
                     )}
                   >
                     <Icon className="h-4 w-4" />
@@ -101,9 +96,7 @@ export default function Layout({ children }: LayoutProps) {
 
         {/* Main Content */}
         <main className="flex-1 lg:pl-64">
-          <div className="container mx-auto p-4 lg:p-6">
-            {children}
-          </div>
+          <div className="container mx-auto p-4 lg:p-6">{children}</div>
         </main>
       </div>
 
@@ -120,7 +113,7 @@ export default function Layout({ children }: LayoutProps) {
                   "flex flex-col items-center justify-center gap-1 text-xs transition-colors",
                   location.pathname === item.href
                     ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 <Icon className="h-4 w-4" />

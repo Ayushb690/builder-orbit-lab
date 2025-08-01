@@ -17,7 +17,7 @@ import {
   XCircle,
   Clock,
   Users,
-  BookOpen
+  BookOpen,
 } from "lucide-react";
 
 export default function Calendar() {
@@ -83,17 +83,19 @@ export default function Calendar() {
     // Add days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-      const dayAttendance = attendanceData.filter(item => item.date === dateStr);
+      const dayAttendance = attendanceData.filter(
+        (item) => item.date === dateStr,
+      );
       days.push({ day, dateStr, attendance: dayAttendance });
     }
 
     return days;
   };
 
-  const navigateMonth = (direction: 'prev' | 'next') => {
-    setCurrentDate(prev => {
+  const navigateMonth = (direction: "prev" | "next") => {
+    setCurrentDate((prev) => {
       const newDate = new Date(prev);
-      if (direction === 'prev') {
+      if (direction === "prev") {
         newDate.setMonth(newDate.getMonth() - 1);
       } else {
         newDate.setMonth(newDate.getMonth() + 1);
@@ -103,14 +105,24 @@ export default function Calendar() {
   };
 
   const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-  const todayClasses = attendanceData.filter(item => {
-    const today = new Date().toISOString().split('T')[0];
+  const todayClasses = attendanceData.filter((item) => {
+    const today = new Date().toISOString().split("T")[0];
     return item.date === today;
   });
 
@@ -120,7 +132,9 @@ export default function Calendar() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Calendar</h1>
-          <p className="text-muted-foreground">Track and manage class attendance</p>
+          <p className="text-muted-foreground">
+            Track and manage class attendance
+          </p>
         </div>
         <Select value={selectedSubject} onValueChange={setSelectedSubject}>
           <SelectTrigger className="w-48">
@@ -144,20 +158,21 @@ export default function Calendar() {
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
                   <CalendarIcon className="h-5 w-5" />
-                  {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+                  {monthNames[currentDate.getMonth()]}{" "}
+                  {currentDate.getFullYear()}
                 </CardTitle>
                 <div className="flex gap-1">
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => navigateMonth('prev')}
+                    onClick={() => navigateMonth("prev")}
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => navigateMonth('next')}
+                    onClick={() => navigateMonth("next")}
                   >
                     <ChevronRight className="h-4 w-4" />
                   </Button>
@@ -195,8 +210,8 @@ export default function Calendar() {
                                   att.status === "present"
                                     ? "bg-success"
                                     : att.status === "absent"
-                                    ? "bg-destructive"
-                                    : "bg-warning"
+                                      ? "bg-destructive"
+                                      : "bg-warning"
                                 }`}
                               />
                             ))}
@@ -233,15 +248,17 @@ export default function Calendar() {
                       <div className="flex items-start justify-between mb-2">
                         <div>
                           <h4 className="font-medium">{classItem.subject}</h4>
-                          <p className="text-sm text-muted-foreground">{classItem.time}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {classItem.time}
+                          </p>
                         </div>
                         <Badge
                           variant={
                             classItem.status === "present"
                               ? "default"
                               : classItem.status === "absent"
-                              ? "destructive"
-                              : "secondary"
+                                ? "destructive"
+                                : "secondary"
                           }
                           className={
                             classItem.status === "present"
@@ -254,7 +271,8 @@ export default function Calendar() {
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Users className="h-4 w-4" />
-                        {classItem.students.present}/{classItem.students.total} students
+                        {classItem.students.present}/{classItem.students.total}{" "}
+                        students
                       </div>
                       {classItem.status === "pending" && (
                         <Button className="w-full mt-3" size="sm">
@@ -266,7 +284,9 @@ export default function Calendar() {
                 ) : (
                   <div className="text-center py-6">
                     <BookOpen className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">No classes today</p>
+                    <p className="text-sm text-muted-foreground">
+                      No classes today
+                    </p>
                   </div>
                 )}
               </div>

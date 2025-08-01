@@ -21,7 +21,7 @@ import {
   Award,
   Plus,
   X,
-  Ban
+  Ban,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -37,25 +37,34 @@ interface Subject {
 interface AttendanceRecord {
   subjectId: string;
   date: string;
-  status: 'present' | 'absent' | 'extra' | 'cancelled';
+  status: "present" | "absent" | "extra" | "cancelled";
 }
 
 export default function Analytics() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
+  const [attendanceRecords, setAttendanceRecords] = useState<
+    AttendanceRecord[]
+  >([]);
   const [selectedPeriod, setSelectedPeriod] = useState("30days");
 
   useEffect(() => {
     // Load data from localStorage
-    const savedSubjects = localStorage.getItem('attendanceApp_subjects');
-    const savedAttendance = localStorage.getItem('attendanceApp_attendance');
+    const savedSubjects = localStorage.getItem("attendanceApp_subjects");
+    const savedAttendance = localStorage.getItem("attendanceApp_attendance");
 
     if (savedSubjects) setSubjects(JSON.parse(savedSubjects));
     if (savedAttendance) setAttendanceRecords(JSON.parse(savedAttendance));
   }, []);
 
   const getDateRange = (period: string) => {
-    const days = period === "7days" ? 7 : period === "30days" ? 30 : period === "90days" ? 90 : 365;
+    const days =
+      period === "7days"
+        ? 7
+        : period === "30days"
+          ? 30
+          : period === "90days"
+            ? 90
+            : 365;
     const endDate = new Date();
     const startDate = new Date();
     startDate.setDate(endDate.getDate() - days);
@@ -64,18 +73,27 @@ export default function Analytics() {
 
   const getOverallStats = () => {
     const { startDate } = getDateRange(selectedPeriod);
-    const periodRecords = attendanceRecords.filter(record => 
-      new Date(record.date) >= startDate
+    const periodRecords = attendanceRecords.filter(
+      (record) => new Date(record.date) >= startDate,
     );
 
-    const present = periodRecords.filter(record => record.status === 'present').length;
-    const absent = periodRecords.filter(record => record.status === 'absent').length;
-    const extra = periodRecords.filter(record => record.status === 'extra').length;
-    const cancelled = periodRecords.filter(record => record.status === 'cancelled').length;
-    
+    const present = periodRecords.filter(
+      (record) => record.status === "present",
+    ).length;
+    const absent = periodRecords.filter(
+      (record) => record.status === "absent",
+    ).length;
+    const extra = periodRecords.filter(
+      (record) => record.status === "extra",
+    ).length;
+    const cancelled = periodRecords.filter(
+      (record) => record.status === "cancelled",
+    ).length;
+
     const totalAttended = present + extra;
     const totalClasses = present + absent + extra;
-    const averageAttendance = totalClasses > 0 ? Math.round((totalAttended / totalClasses) * 100) : 0;
+    const averageAttendance =
+      totalClasses > 0 ? Math.round((totalAttended / totalClasses) * 100) : 0;
 
     return {
       totalClasses: totalClasses + cancelled,
@@ -84,34 +102,51 @@ export default function Analytics() {
       absent,
       extra,
       cancelled,
-      totalAttended
+      totalAttended,
     };
   };
 
   const getSubjectPerformance = () => {
     const { startDate } = getDateRange(selectedPeriod);
 
-    return subjects.map(subject => {
+    return subjects.map((subject) => {
       // Get all records for this subject (not just within date range for total calculation)
-      const allSubjectRecords = attendanceRecords.filter(record => record.subjectId === subject.id);
-      const totalExtraClasses = allSubjectRecords.filter(record => record.status === 'extra').length;
+      const allSubjectRecords = attendanceRecords.filter(
+        (record) => record.subjectId === subject.id,
+      );
+      const totalExtraClasses = allSubjectRecords.filter(
+        (record) => record.status === "extra",
+      ).length;
 
       // Calculate remaining required classes: original total - (extra classes * 2)
-      const remainingRequired = Math.max(0, subject.totalClasses - (totalExtraClasses * 2));
-
-      // Get records within the selected period for display
-      const subjectRecords = attendanceRecords.filter(record =>
-        record.subjectId === subject.id && new Date(record.date) >= startDate
+      const remainingRequired = Math.max(
+        0,
+        subject.totalClasses - totalExtraClasses * 2,
       );
 
-      const present = subjectRecords.filter(record => record.status === 'present').length;
-      const absent = subjectRecords.filter(record => record.status === 'absent').length;
-      const extra = subjectRecords.filter(record => record.status === 'extra').length;
+      // Get records within the selected period for display
+      const subjectRecords = attendanceRecords.filter(
+        (record) =>
+          record.subjectId === subject.id && new Date(record.date) >= startDate,
+      );
+
+      const present = subjectRecords.filter(
+        (record) => record.status === "present",
+      ).length;
+      const absent = subjectRecords.filter(
+        (record) => record.status === "absent",
+      ).length;
+      const extra = subjectRecords.filter(
+        (record) => record.status === "extra",
+      ).length;
 
       // Calculate attendance considering extra classes as double value
-      const totalAttendedValue = present + (extra * 2);
-      const totalClassesValue = present + absent + (extra * 2);
-      const attendance = totalClassesValue > 0 ? Math.round((totalAttendedValue / totalClassesValue) * 100) : 0;
+      const totalAttendedValue = present + extra * 2;
+      const totalClassesValue = present + absent + extra * 2;
+      const attendance =
+        totalClassesValue > 0
+          ? Math.round((totalAttendedValue / totalClassesValue) * 100)
+          : 0;
 
       return {
         subject: subject.name,
@@ -125,60 +160,86 @@ export default function Analytics() {
         originalTotal: subject.totalClasses,
         totalAttendedValue,
         totalClassesValue,
-        color: subject.color
+        color: subject.color,
       };
     });
   };
 
   const getWeeklyPattern = () => {
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const days = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
     const { startDate } = getDateRange(selectedPeriod);
-    
-    return days.map(day => {
-      const dayRecords = attendanceRecords.filter(record => {
-        const recordDate = new Date(record.date);
-        const dayName = recordDate.toLocaleDateString('en-US', { weekday: 'long' });
-        return dayName === day && recordDate >= startDate;
-      });
-      
-      const present = dayRecords.filter(record => record.status === 'present').length;
-      const extra = dayRecords.filter(record => record.status === 'extra').length;
-      const total = dayRecords.filter(record => record.status !== 'cancelled').length;
-      
-      const attendance = total > 0 ? Math.round(((present + extra) / total) * 100) : 0;
-      
-      return { day, attendance, total };
-    }).filter(day => day.total > 0); // Only show days with classes
+
+    return days
+      .map((day) => {
+        const dayRecords = attendanceRecords.filter((record) => {
+          const recordDate = new Date(record.date);
+          const dayName = recordDate.toLocaleDateString("en-US", {
+            weekday: "long",
+          });
+          return dayName === day && recordDate >= startDate;
+        });
+
+        const present = dayRecords.filter(
+          (record) => record.status === "present",
+        ).length;
+        const extra = dayRecords.filter(
+          (record) => record.status === "extra",
+        ).length;
+        const total = dayRecords.filter(
+          (record) => record.status !== "cancelled",
+        ).length;
+
+        const attendance =
+          total > 0 ? Math.round(((present + extra) / total) * 100) : 0;
+
+        return { day, attendance, total };
+      })
+      .filter((day) => day.total > 0); // Only show days with classes
   };
 
   const getMonthlyTrend = () => {
     const months = [];
     const now = new Date();
-    
+
     for (let i = 5; i >= 0; i--) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
       const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-      
-      const monthRecords = attendanceRecords.filter(record => {
+
+      const monthRecords = attendanceRecords.filter((record) => {
         const recordDate = new Date(record.date);
         return recordDate >= monthStart && recordDate <= monthEnd;
       });
-      
-      const present = monthRecords.filter(record => record.status === 'present').length;
-      const extra = monthRecords.filter(record => record.status === 'extra').length;
-      const total = monthRecords.filter(record => record.status !== 'cancelled').length;
-      
-      const attendance = total > 0 ? Math.round(((present + extra) / total) * 100) : 0;
-      
+
+      const present = monthRecords.filter(
+        (record) => record.status === "present",
+      ).length;
+      const extra = monthRecords.filter(
+        (record) => record.status === "extra",
+      ).length;
+      const total = monthRecords.filter(
+        (record) => record.status !== "cancelled",
+      ).length;
+
+      const attendance =
+        total > 0 ? Math.round(((present + extra) / total) * 100) : 0;
+
       months.push({
-        month: date.toLocaleDateString('en-US', { month: 'short' }),
+        month: date.toLocaleDateString("en-US", { month: "short" }),
         attendance,
-        total
+        total,
       });
     }
-    
-    return months.filter(month => month.total > 0);
+
+    return months.filter((month) => month.total > 0);
   };
 
   const getTopPerformers = () => {
@@ -191,9 +252,9 @@ export default function Analytics() {
     const overallStats = getOverallStats();
     const subjectPerformance = getSubjectPerformance();
     const weeklyPattern = getWeeklyPattern();
-    
+
     const insights = [];
-    
+
     // Attendance trend insight
     if (overallStats.averageAttendance >= 90) {
       insights.push({
@@ -212,12 +273,14 @@ export default function Analytics() {
         color: "text-warning",
       });
     }
-    
+
     // Best performing subject
-    const bestSubject = subjectPerformance.reduce((best, current) => 
-      current.attendance > best.attendance ? current : best, subjectPerformance[0]
+    const bestSubject = subjectPerformance.reduce(
+      (best, current) =>
+        current.attendance > best.attendance ? current : best,
+      subjectPerformance[0],
     );
-    
+
     if (bestSubject) {
       insights.push({
         type: "info",
@@ -227,7 +290,7 @@ export default function Analytics() {
         color: "text-primary",
       });
     }
-    
+
     // Extra classes insight
     if (overallStats.extra > 0) {
       insights.push({
@@ -238,7 +301,7 @@ export default function Analytics() {
         color: "text-info",
       });
     }
-    
+
     return insights;
   };
 
@@ -275,7 +338,9 @@ export default function Analytics() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Analytics</h1>
-          <p className="text-muted-foreground">Detailed insights and progress reports</p>
+          <p className="text-muted-foreground">
+            Detailed insights and progress reports
+          </p>
         </div>
         <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
           <SelectTrigger className="w-48">
@@ -298,7 +363,9 @@ export default function Analytics() {
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{overallStats.totalClasses}</div>
+            <div className="text-2xl font-bold">
+              {overallStats.totalClasses}
+            </div>
             <p className="text-xs text-muted-foreground">
               {overallStats.present + overallStats.extra} attended
             </p>
@@ -307,11 +374,15 @@ export default function Analytics() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Attendance Rate</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Attendance Rate
+            </CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">{overallStats.averageAttendance}%</div>
+            <div className="text-2xl font-bold text-primary">
+              {overallStats.averageAttendance}%
+            </div>
             <p className="text-xs text-success">Average attendance</p>
           </CardContent>
         </Card>
@@ -322,18 +393,24 @@ export default function Analytics() {
             <Plus className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-info">{overallStats.extra}</div>
+            <div className="text-2xl font-bold text-info">
+              {overallStats.extra}
+            </div>
             <p className="text-xs text-muted-foreground">Additional classes</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Missed Classes</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Missed Classes
+            </CardTitle>
             <X className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-destructive">{overallStats.absent}</div>
+            <div className="text-2xl font-bold text-destructive">
+              {overallStats.absent}
+            </div>
             <p className="text-xs text-muted-foreground">Classes missed</p>
           </CardContent>
         </Card>
@@ -351,11 +428,15 @@ export default function Analytics() {
               <div className="space-y-4">
                 {monthlyTrend.map((month) => (
                   <div key={month.month} className="flex items-center gap-4">
-                    <div className="w-12 text-sm font-medium">{month.month}</div>
+                    <div className="w-12 text-sm font-medium">
+                      {month.month}
+                    </div>
                     <div className="flex-1">
                       <Progress value={month.attendance} className="h-3" />
                     </div>
-                    <div className="w-12 text-sm text-right">{month.attendance}%</div>
+                    <div className="w-12 text-sm text-right">
+                      {month.attendance}%
+                    </div>
                   </div>
                 ))}
               </div>
@@ -377,7 +458,9 @@ export default function Analytics() {
                     <div className="flex-1">
                       <Progress value={day.attendance} className="h-3" />
                     </div>
-                    <div className="w-12 text-sm text-right">{day.attendance}%</div>
+                    <div className="w-12 text-sm text-right">
+                      {day.attendance}%
+                    </div>
                   </div>
                 ))}
               </div>
@@ -397,7 +480,10 @@ export default function Analytics() {
         <CardContent>
           <div className="space-y-4">
             {subjectPerformance.map((subject) => (
-              <div key={subject.subject} className="flex items-center justify-between p-4 rounded-lg border">
+              <div
+                key={subject.subject}
+                className="flex items-center justify-between p-4 rounded-lg border"
+              >
                 <div className="flex items-center gap-4">
                   <div className={`h-4 w-4 rounded-full ${subject.color}`} />
                   <div>
@@ -417,7 +503,8 @@ export default function Analytics() {
                       {subject.totalAttendedValue} attended value
                     </div>
                     <div className="text-xs text-success">
-                      {subject.originalTotal - subject.remainingRequired} saved from extra
+                      {subject.originalTotal - subject.remainingRequired} saved
+                      from extra
                     </div>
                   </div>
                   <div className="w-20">
@@ -443,11 +530,16 @@ export default function Analytics() {
                 insights.map((insight, index) => {
                   const Icon = insight.icon;
                   return (
-                    <div key={index} className="flex items-start gap-3 p-3 rounded-lg border">
+                    <div
+                      key={index}
+                      className="flex items-start gap-3 p-3 rounded-lg border"
+                    >
                       <Icon className={`h-5 w-5 mt-0.5 ${insight.color}`} />
                       <div>
                         <h4 className="font-medium">{insight.title}</h4>
-                        <p className="text-sm text-muted-foreground">{insight.description}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {insight.description}
+                        </p>
                       </div>
                     </div>
                   );
@@ -475,14 +567,19 @@ export default function Analytics() {
           <CardContent>
             <div className="space-y-4">
               {topPerformers.map((subject, index) => (
-                <div key={subject.subject} className="flex items-center justify-between p-3 rounded-lg border">
+                <div
+                  key={subject.subject}
+                  className="flex items-center justify-between p-3 rounded-lg border"
+                >
                   <div className="flex items-center gap-3">
                     <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
                       {index + 1}
                     </div>
                     <div>
                       <h4 className="font-medium">{subject.subject}</h4>
-                      <p className="text-sm text-muted-foreground">{subject.code}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {subject.code}
+                      </p>
                     </div>
                   </div>
                   <Badge className="bg-success hover:bg-success/90">

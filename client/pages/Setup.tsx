@@ -19,7 +19,7 @@ import {
   Clock,
   Users,
   Settings,
-  ArrowRight
+  ArrowRight,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -57,16 +57,47 @@ export default function Setup() {
     endTime: "",
   });
 
-  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const days = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
   const timeOptions = [
-    "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-    "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30",
-    "16:00", "16:30", "17:00", "17:30", "18:00"
+    "08:00",
+    "08:30",
+    "09:00",
+    "09:30",
+    "10:00",
+    "10:30",
+    "11:00",
+    "11:30",
+    "12:00",
+    "12:30",
+    "13:00",
+    "13:30",
+    "14:00",
+    "14:30",
+    "15:00",
+    "15:30",
+    "16:00",
+    "16:30",
+    "17:00",
+    "17:30",
+    "18:00",
   ];
 
   const colors = [
-    "bg-blue-500", "bg-green-500", "bg-purple-500", "bg-orange-500",
-    "bg-red-500", "bg-pink-500", "bg-indigo-500", "bg-teal-500"
+    "bg-blue-500",
+    "bg-green-500",
+    "bg-purple-500",
+    "bg-orange-500",
+    "bg-red-500",
+    "bg-pink-500",
+    "bg-indigo-500",
+    "bg-teal-500",
   ];
 
   const addSubject = () => {
@@ -87,12 +118,17 @@ export default function Setup() {
   };
 
   const removeSubject = (id: string) => {
-    setSubjects(subjects.filter(s => s.id !== id));
-    setTimeSlots(timeSlots.filter(ts => ts.subjectId !== id));
+    setSubjects(subjects.filter((s) => s.id !== id));
+    setTimeSlots(timeSlots.filter((ts) => ts.subjectId !== id));
   };
 
   const addTimeSlot = () => {
-    if (currentTimeSlot.subjectId && currentTimeSlot.day && currentTimeSlot.startTime && currentTimeSlot.endTime) {
+    if (
+      currentTimeSlot.subjectId &&
+      currentTimeSlot.day &&
+      currentTimeSlot.startTime &&
+      currentTimeSlot.endTime
+    ) {
       const newTimeSlot: TimeSlot = {
         id: Date.now().toString(),
         ...currentTimeSlot,
@@ -108,25 +144,25 @@ export default function Setup() {
   };
 
   const removeTimeSlot = (id: string) => {
-    setTimeSlots(timeSlots.filter(ts => ts.id !== id));
+    setTimeSlots(timeSlots.filter((ts) => ts.id !== id));
   };
 
   const getTimeSlotsByDay = (day: string) => {
     return timeSlots
-      .filter(ts => ts.day === day)
+      .filter((ts) => ts.day === day)
       .sort((a, b) => a.startTime.localeCompare(b.startTime));
   };
 
   const getSubjectById = (id: string) => {
-    return subjects.find(s => s.id === id);
+    return subjects.find((s) => s.id === id);
   };
 
   const handleSaveAndContinue = () => {
     // Save to localStorage for now (in a real app, this would go to a backend)
-    localStorage.setItem('attendanceApp_subjects', JSON.stringify(subjects));
-    localStorage.setItem('attendanceApp_timeSlots', JSON.stringify(timeSlots));
-    localStorage.setItem('attendanceApp_setupComplete', 'true');
-    navigate('/');
+    localStorage.setItem("attendanceApp_subjects", JSON.stringify(subjects));
+    localStorage.setItem("attendanceApp_timeSlots", JSON.stringify(timeSlots));
+    localStorage.setItem("attendanceApp_setupComplete", "true");
+    navigate("/");
   };
 
   return (
@@ -162,10 +198,12 @@ export default function Setup() {
                     id="subjectName"
                     placeholder="e.g., Mathematics"
                     value={currentSubject.name}
-                    onChange={(e) => setCurrentSubject({
-                      ...currentSubject,
-                      name: e.target.value
-                    })}
+                    onChange={(e) =>
+                      setCurrentSubject({
+                        ...currentSubject,
+                        name: e.target.value,
+                      })
+                    }
                   />
                 </div>
                 <div>
@@ -174,10 +212,12 @@ export default function Setup() {
                     id="subjectCode"
                     placeholder="e.g., MATH101"
                     value={currentSubject.code}
-                    onChange={(e) => setCurrentSubject({
-                      ...currentSubject,
-                      code: e.target.value
-                    })}
+                    onChange={(e) =>
+                      setCurrentSubject({
+                        ...currentSubject,
+                        code: e.target.value,
+                      })
+                    }
                   />
                 </div>
                 <div>
@@ -186,23 +226,29 @@ export default function Setup() {
                     id="instructor"
                     placeholder="e.g., Dr. Smith"
                     value={currentSubject.instructor}
-                    onChange={(e) => setCurrentSubject({
-                      ...currentSubject,
-                      instructor: e.target.value
-                    })}
+                    onChange={(e) =>
+                      setCurrentSubject({
+                        ...currentSubject,
+                        instructor: e.target.value,
+                      })
+                    }
                   />
                 </div>
                 <div>
-                  <Label htmlFor="totalClasses">Total Classes This Semester</Label>
+                  <Label htmlFor="totalClasses">
+                    Total Classes This Semester
+                  </Label>
                   <Input
                     id="totalClasses"
                     type="number"
                     placeholder="e.g., 45"
                     value={currentSubject.totalClasses || ""}
-                    onChange={(e) => setCurrentSubject({
-                      ...currentSubject,
-                      totalClasses: parseInt(e.target.value) || 0
-                    })}
+                    onChange={(e) =>
+                      setCurrentSubject({
+                        ...currentSubject,
+                        totalClasses: parseInt(e.target.value) || 0,
+                      })
+                    }
                   />
                 </div>
                 <Button onClick={addSubject} className="w-full">
@@ -216,9 +262,14 @@ export default function Setup() {
                 <div className="space-y-2">
                   <h4 className="font-medium">Added Subjects</h4>
                   {subjects.map((subject) => (
-                    <div key={subject.id} className="flex items-center justify-between p-3 rounded-lg border">
+                    <div
+                      key={subject.id}
+                      className="flex items-center justify-between p-3 rounded-lg border"
+                    >
                       <div className="flex items-center gap-3">
-                        <div className={`h-4 w-4 rounded-full ${subject.color}`} />
+                        <div
+                          className={`h-4 w-4 rounded-full ${subject.color}`}
+                        />
                         <div>
                           <p className="font-medium">{subject.name}</p>
                           <p className="text-sm text-muted-foreground">
@@ -256,10 +307,12 @@ export default function Setup() {
                       <Label htmlFor="scheduleSubject">Subject</Label>
                       <Select
                         value={currentTimeSlot.subjectId}
-                        onValueChange={(value) => setCurrentTimeSlot({
-                          ...currentTimeSlot,
-                          subjectId: value
-                        })}
+                        onValueChange={(value) =>
+                          setCurrentTimeSlot({
+                            ...currentTimeSlot,
+                            subjectId: value,
+                          })
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select subject" />
@@ -277,10 +330,12 @@ export default function Setup() {
                       <Label htmlFor="scheduleDay">Day</Label>
                       <Select
                         value={currentTimeSlot.day}
-                        onValueChange={(value) => setCurrentTimeSlot({
-                          ...currentTimeSlot,
-                          day: value
-                        })}
+                        onValueChange={(value) =>
+                          setCurrentTimeSlot({
+                            ...currentTimeSlot,
+                            day: value,
+                          })
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select day" />
@@ -299,10 +354,12 @@ export default function Setup() {
                         <Label htmlFor="startTime">Start Time</Label>
                         <Select
                           value={currentTimeSlot.startTime}
-                          onValueChange={(value) => setCurrentTimeSlot({
-                            ...currentTimeSlot,
-                            startTime: value
-                          })}
+                          onValueChange={(value) =>
+                            setCurrentTimeSlot({
+                              ...currentTimeSlot,
+                              startTime: value,
+                            })
+                          }
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Start" />
@@ -320,10 +377,12 @@ export default function Setup() {
                         <Label htmlFor="endTime">End Time</Label>
                         <Select
                           value={currentTimeSlot.endTime}
-                          onValueChange={(value) => setCurrentTimeSlot({
-                            ...currentTimeSlot,
-                            endTime: value
-                          })}
+                          onValueChange={(value) =>
+                            setCurrentTimeSlot({
+                              ...currentTimeSlot,
+                              endTime: value,
+                            })
+                          }
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="End" />
@@ -373,7 +432,7 @@ export default function Setup() {
                         return (
                           <div
                             key={slot.id}
-                            className={`p-2 rounded text-white text-xs relative group ${subject?.color || 'bg-gray-500'}`}
+                            className={`p-2 rounded text-white text-xs relative group ${subject?.color || "bg-gray-500"}`}
                           >
                             <div className="font-medium">{subject?.name}</div>
                             <div className="text-xs opacity-90">
