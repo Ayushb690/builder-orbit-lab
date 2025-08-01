@@ -335,35 +335,7 @@ export default function Dashboard() {
         </CardContent>
       </Card>
 
-      {/* Quick Stats Summary */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Clock className="h-5 w-5" />
-            Overall Statistics
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-4">
-            <div className="text-center p-4 rounded-lg bg-success/10">
-              <div className="text-2xl font-bold text-success">{totalStats.present}</div>
-              <div className="text-sm text-muted-foreground">Total Present</div>
-            </div>
-            <div className="text-center p-4 rounded-lg bg-destructive/10">
-              <div className="text-2xl font-bold text-destructive">{totalStats.absent}</div>
-              <div className="text-sm text-muted-foreground">Total Absent</div>
-            </div>
-            <div className="text-center p-4 rounded-lg bg-info/10">
-              <div className="text-2xl font-bold text-info">{totalStats.extra}</div>
-              <div className="text-sm text-muted-foreground">Extra Classes</div>
-            </div>
-            <div className="text-center p-4 rounded-lg bg-muted/50">
-              <div className="text-2xl font-bold">{totalStats.totalClasses}</div>
-              <div className="text-sm text-muted-foreground">Total Classes</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+
     </div>
   );
 }
