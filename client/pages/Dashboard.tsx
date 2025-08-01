@@ -83,15 +83,18 @@ export default function Dashboard() {
   const getOverallStats = () => {
     const today = new Date().toISOString().split('T')[0];
     const todayRecords = attendanceRecords.filter(record => record.date === today);
-    
+
     const present = todayRecords.filter(record => record.status === 'present').length;
     const absent = todayRecords.filter(record => record.status === 'absent').length;
     const extra = todayRecords.filter(record => record.status === 'extra').length;
     const cancelled = todayRecords.filter(record => record.status === 'cancelled').length;
-    
+
+    // Add 2 classes for each extra class to present count
+    const totalPresentClasses = present + (extra * 2);
+
     const totalMarked = present + absent + extra + cancelled;
     const attendancePercentage = subjects.length > 0 ? Math.round((present / subjects.length) * 100) : 0;
-    
+
     return {
       present,
       absent,
@@ -99,7 +102,8 @@ export default function Dashboard() {
       cancelled,
       totalMarked,
       totalSubjects: subjects.length,
-      attendancePercentage
+      attendancePercentage,
+      totalPresentClasses
     };
   };
 
