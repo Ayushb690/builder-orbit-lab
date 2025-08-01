@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +10,8 @@ import {
   TrendingUp,
   Plus,
   Calendar,
-  MoreVertical
+  MoreVertical,
+  Settings
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -18,63 +19,65 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Link } from "react-router-dom";
+
+interface Subject {
+  id: string;
+  name: string;
+  code: string;
+  instructor: string;
+  color: string;
+  totalClasses: number;
+}
+
+interface TimeSlot {
+  id: string;
+  subjectId: string;
+  day: string;
+  startTime: string;
+  endTime: string;
+}
+
+interface AttendanceRecord {
+  subjectId: string;
+  date: string;
+  status: 'present' | 'absent' | 'extra' | 'cancelled';
+}
 
 export default function Subjects() {
-  // Mock data
-  const subjects = [
-    {
-      id: 1,
-      name: "Mathematics",
-      code: "MATH101",
-      instructor: "Dr. Sarah Johnson",
-      totalStudents: 30,
-      schedule: "Mon, Wed, Fri 9:00 AM",
-      averageAttendance: 92,
-      lastClass: "2024-01-15",
-      nextClass: "2024-01-17",
-      color: "bg-blue-500",
-      recentAttendance: [95, 88, 92, 97, 89],
-    },
-    {
-      id: 2,
-      name: "Physics",
-      code: "PHYS201",
-      instructor: "Prof. Michael Chen",
-      totalStudents: 28,
-      schedule: "Tue, Thu 11:00 AM",
-      averageAttendance: 87,
-      lastClass: "2024-01-14",
-      nextClass: "2024-01-16",
-      color: "bg-green-500",
-      recentAttendance: [90, 85, 89, 86, 92],
-    },
-    {
-      id: 3,
-      name: "Chemistry",
-      code: "CHEM151",
-      instructor: "Dr. Emily Rodriguez",
-      totalStudents: 25,
-      schedule: "Mon, Wed 2:00 PM",
-      averageAttendance: 78,
-      lastClass: "2024-01-15",
-      nextClass: "2024-01-17",
-      color: "bg-purple-500",
-      recentAttendance: [75, 82, 79, 74, 80],
-    },
-    {
-      id: 4,
-      name: "English Literature",
-      code: "ENG301",
-      instructor: "Ms. Amanda Wilson",
-      totalStudents: 32,
-      schedule: "Tue, Fri 10:00 AM",
-      averageAttendance: 94,
-      lastClass: "2024-01-12",
-      nextClass: "2024-01-16",
-      color: "bg-orange-500",
-      recentAttendance: [96, 92, 94, 95, 91],
-    },
-  ];
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
+  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
+
+  useEffect(() => {
+    // Load data from localStorage
+    const savedSubjects = localStorage.getItem('attendanceApp_subjects');
+    const savedTimeSlots = localStorage.getItem('attendanceApp_timeSlots');
+    const savedAttendance = localStorage.getItem('attendanceApp_attendance');
+
+    if (savedSubjects) setSubjects(JSON.parse(savedSubjects));
+    if (savedTimeSlots) setTimeSlots(JSON.parse(savedTimeSlots));
+    if (savedAttendance) setAttendanceRecords(JSON.parse(savedAttendance));
+  }, []);
+
+  const getSubjectStats = (subjectId: string) => {
+    const subjectRecords = attendanceRecords.filter(record => record.subjectId === subjectId);
+    const present = subjectRecords.filter(record => record.status === 'present').length;
+    const absent = subjectRecords.filter(record => record.status === 'absent').length;
+    const extra = subjectRecords.filter(record => record.status === 'extra').length;
+    const cancelled = subjectRecords.filter(record => record.status === 'cancelled').length;
+    
+    const totalAttended = present + extra;
+    const totalClasses = present + absent + extra;
+    const attendancePercentage = totalClasses > 0 ? Math.round((totalAttended / totalClasses) * 100) : 0;
+    
+    return { present, absent, extra, cancelled, totalAttended, totalClasses, attendancePercentage };
+  };
+
+  const getSubjectSchedule = (subjectId: string) => {
+    const subjectSlots = timeSlots.filter(slot => slot.subjectId === subjectId);
+    return subjectSlots.map(slot => `${slot.day} ${slot.startTime}-${slot.endTime}`).join(', ');
+  };
 
   const getAttendanceStatus = (percentage: number) => {
     if (percentage >= 90) return { label: "Excellent", variant: "default" as const, className: "bg-success hover:bg-success/90" };
@@ -82,6 +85,34 @@ export default function Subjects() {
     if (percentage >= 70) return { label: "Fair", variant: "outline" as const, className: "" };
     return { label: "Poor", variant: "destructive" as const, className: "" };
   };
+
+  const overallStats = {
+    totalSubjects: subjects.length,
+    averageAttendance: subjects.length > 0 ? 
+      Math.round(subjects.reduce((acc, subject) => acc + getSubjectStats(subject.id).attendancePercentage, 0) / subjects.length) : 0,
+    totalClassesAttended: attendanceRecords.filter(record => record.status === 'present' || record.status === 'extra').length,
+    totalScheduledClasses: timeSlots.length * 4, // Assuming 4 weeks for demo
+  };
+
+  if (subjects.length === 0) {
+    return (
+      <div className="space-y-6 pb-20 lg:pb-6">
+        <div className="text-center py-12">
+          <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+          <h2 className="text-2xl font-bold mb-2">No Subjects Found</h2>
+          <p className="text-muted-foreground mb-6">
+            Set up your subjects and schedule to get started
+          </p>
+          <Button asChild size="lg">
+            <Link to="/setup">
+              <Plus className="h-4 w-4 mr-2" />
+              Setup Subjects & Schedule
+            </Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 pb-20 lg:pb-6">
@@ -91,9 +122,11 @@ export default function Subjects() {
           <h1 className="text-2xl font-bold tracking-tight">Subjects</h1>
           <p className="text-muted-foreground">Manage your subjects and track attendance</p>
         </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Subject
+        <Button asChild>
+          <Link to="/setup">
+            <Settings className="h-4 w-4 mr-2" />
+            Modify Setup
+          </Link>
         </Button>
       </div>
 
@@ -105,8 +138,8 @@ export default function Subjects() {
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{subjects.length}</div>
-            <p className="text-xs text-muted-foreground">Active subjects</p>
+            <div className="text-2xl font-bold">{overallStats.totalSubjects}</div>
+            <p className="text-xs text-muted-foreground">Configured subjects</p>
           </CardContent>
         </Card>
 
@@ -116,34 +149,30 @@ export default function Subjects() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">
-              {Math.round(subjects.reduce((acc, s) => acc + s.averageAttendance, 0) / subjects.length)}%
-            </div>
-            <p className="text-xs text-success">+3.2% from last month</p>
+            <div className="text-2xl font-bold text-primary">{overallStats.averageAttendance}%</div>
+            <p className="text-xs text-success">Across all subjects</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+            <CardTitle className="text-sm font-medium">Classes Attended</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {subjects.reduce((acc, s) => acc + s.totalStudents, 0)}
-            </div>
-            <p className="text-xs text-muted-foreground">Across all subjects</p>
+            <div className="text-2xl font-bold">{overallStats.totalClassesAttended}</div>
+            <p className="text-xs text-muted-foreground">Total attended</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Classes This Week</CardTitle>
+            <CardTitle className="text-sm font-medium">Weekly Classes</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12</div>
-            <p className="text-xs text-muted-foreground">8 completed, 4 upcoming</p>
+            <div className="text-2xl font-bold">{timeSlots.length}</div>
+            <p className="text-xs text-muted-foreground">Scheduled per week</p>
           </CardContent>
         </Card>
       </div>
@@ -151,7 +180,9 @@ export default function Subjects() {
       {/* Subjects Grid */}
       <div className="grid gap-6 md:grid-cols-2">
         {subjects.map((subject) => {
-          const attendanceStatus = getAttendanceStatus(subject.averageAttendance);
+          const stats = getSubjectStats(subject.id);
+          const schedule = getSubjectSchedule(subject.id);
+          const attendanceStatus = getAttendanceStatus(stats.attendancePercentage);
           
           return (
             <Card key={subject.id} className="hover:shadow-md transition-shadow">
@@ -188,57 +219,75 @@ export default function Subjects() {
                       <span className="font-medium">Instructor:</span> {subject.instructor}
                     </p>
                     <p className="text-sm">
-                      <span className="font-medium">Schedule:</span> {subject.schedule}
+                      <span className="font-medium">Schedule:</span> {schedule || 'Not scheduled'}
+                    </p>
+                    <p className="text-sm">
+                      <span className="font-medium">Semester Limit:</span> {subject.totalClasses} classes
                     </p>
                   </div>
 
                   {/* Attendance Progress */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Average Attendance</span>
+                      <span className="text-sm font-medium">Attendance Rate</span>
                       <Badge 
                         variant={attendanceStatus.variant}
                         className={attendanceStatus.className}
                       >
-                        {subject.averageAttendance}% - {attendanceStatus.label}
+                        {stats.attendancePercentage}% - {attendanceStatus.label}
                       </Badge>
                     </div>
-                    <Progress value={subject.averageAttendance} className="h-2" />
+                    <Progress value={stats.attendancePercentage} className="h-2" />
                   </div>
 
-                  {/* Stats */}
+                  {/* Detailed Stats */}
                   <div className="grid grid-cols-2 gap-4 pt-2">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold">{subject.totalStudents}</div>
-                      <div className="text-xs text-muted-foreground">Students</div>
+                    <div className="space-y-1">
+                      <div className="text-sm text-muted-foreground">Present</div>
+                      <div className="text-lg font-bold text-success">{stats.present}</div>
                     </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold">
-                        {Math.round(subject.recentAttendance.reduce((a, b) => a + b, 0) / subject.recentAttendance.length)}%
-                      </div>
-                      <div className="text-xs text-muted-foreground">Last 5 Classes</div>
+                    <div className="space-y-1">
+                      <div className="text-sm text-muted-foreground">Absent</div>
+                      <div className="text-lg font-bold text-destructive">{stats.absent}</div>
                     </div>
+                    <div className="space-y-1">
+                      <div className="text-sm text-muted-foreground">Extra</div>
+                      <div className="text-lg font-bold text-info">{stats.extra}</div>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="text-sm text-muted-foreground">Cancelled</div>
+                      <div className="text-lg font-bold text-muted-foreground">{stats.cancelled}</div>
+                    </div>
+                  </div>
+
+                  {/* Progress towards semester limit */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Semester Progress</span>
+                      <span className="text-sm text-muted-foreground">
+                        {stats.totalAttended} / {subject.totalClasses}
+                      </span>
+                    </div>
+                    <Progress 
+                      value={(stats.totalAttended / subject.totalClasses) * 100} 
+                      className="h-2" 
+                    />
                   </div>
 
                   {/* Quick Actions */}
                   <div className="flex gap-2 pt-2">
-                    <Button variant="outline" size="sm" className="flex-1">
-                      <Calendar className="h-4 w-4 mr-2" />
-                      View Schedule
+                    <Button variant="outline" size="sm" className="flex-1" asChild>
+                      <Link to="/calendar">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        View Schedule
+                      </Link>
                     </Button>
-                    <Button size="sm" className="flex-1">
-                      <Users className="h-4 w-4 mr-2" />
-                      Mark Attendance
+                    <Button size="sm" className="flex-1" asChild>
+                      <Link to="/">
+                        <Clock className="h-4 w-4 mr-2" />
+                        Mark Today
+                      </Link>
                     </Button>
-                  </div>
-
-                  {/* Next Class Info */}
-                  <div className="bg-muted/30 rounded-lg p-3 text-sm">
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium">Next Class:</span>
-                      <span className="text-muted-foreground">{subject.nextClass}</span>
-                    </div>
                   </div>
                 </div>
               </CardContent>
