@@ -25,11 +25,11 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/setup" element={<Setup />} />
-          <Route path="/" element={<Layout><Dashboard /></Layout>} />
-          <Route path="/calendar" element={<Layout><Calendar /></Layout>} />
-          <Route path="/analytics" element={<Layout><Analytics /></Layout>} />
+          <Route path="/" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
+          <Route path="/calendar" element={<ProtectedRoute><Layout><Calendar /></Layout></ProtectedRoute>} />
+          <Route path="/analytics" element={<ProtectedRoute><Layout><Analytics /></Layout></ProtectedRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<Layout><NotFound /></Layout>} />
+          <Route path="*" element={<ProtectedRoute><Layout><NotFound /></Layout></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
