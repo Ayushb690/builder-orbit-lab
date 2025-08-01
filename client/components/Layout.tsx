@@ -20,7 +20,6 @@ interface LayoutProps {
 const navItems = [
   { href: "/", icon: Home, label: "Dashboard" },
   { href: "/calendar", icon: Calendar, label: "Calendar" },
-  { href: "/subjects", icon: BookOpen, label: "Subjects" },
   { href: "/analytics", icon: BarChart3, label: "Analytics" },
 ];
 
