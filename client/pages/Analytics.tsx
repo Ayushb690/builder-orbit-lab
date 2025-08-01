@@ -90,20 +90,29 @@ export default function Analytics() {
 
   const getSubjectPerformance = () => {
     const { startDate } = getDateRange(selectedPeriod);
-    
+
     return subjects.map(subject => {
-      const subjectRecords = attendanceRecords.filter(record => 
+      // Get all records for this subject (not just within date range for total calculation)
+      const allSubjectRecords = attendanceRecords.filter(record => record.subjectId === subject.id);
+      const totalExtraClasses = allSubjectRecords.filter(record => record.status === 'extra').length;
+
+      // Calculate remaining required classes: original total - (extra classes * 2)
+      const remainingRequired = Math.max(0, subject.totalClasses - (totalExtraClasses * 2));
+
+      // Get records within the selected period for display
+      const subjectRecords = attendanceRecords.filter(record =>
         record.subjectId === subject.id && new Date(record.date) >= startDate
       );
-      
+
       const present = subjectRecords.filter(record => record.status === 'present').length;
       const absent = subjectRecords.filter(record => record.status === 'absent').length;
       const extra = subjectRecords.filter(record => record.status === 'extra').length;
-      
-      const totalAttended = present + extra;
-      const totalClasses = present + absent + extra;
-      const attendance = totalClasses > 0 ? Math.round((totalAttended / totalClasses) * 100) : 0;
-      
+
+      // Calculate attendance considering extra classes as double value
+      const totalAttendedValue = present + (extra * 2);
+      const totalClassesValue = present + absent + (extra * 2);
+      const attendance = totalClassesValue > 0 ? Math.round((totalAttendedValue / totalClassesValue) * 100) : 0;
+
       return {
         subject: subject.name,
         code: subject.code,
@@ -111,7 +120,11 @@ export default function Analytics() {
         present,
         absent,
         extra,
-        totalClasses,
+        totalExtraClasses,
+        remainingRequired,
+        originalTotal: subject.totalClasses,
+        totalAttendedValue,
+        totalClassesValue,
         color: subject.color
       };
     });
@@ -390,7 +403,7 @@ export default function Analytics() {
                   <div>
                     <h4 className="font-medium">{subject.subject}</h4>
                     <p className="text-sm text-muted-foreground">
-                      {subject.present}P • {subject.absent}A ��� {subject.extra}E
+                      {subject.present}P • {subject.absent}A • {subject.extra}E
                     </p>
                   </div>
                 </div>
