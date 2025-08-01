@@ -201,9 +201,9 @@ export default function Dashboard() {
             <UserCheck className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-success">{stats.present}</div>
+            <div className="text-2xl font-bold text-success">{stats.totalPresentClasses}</div>
             <p className="text-xs text-muted-foreground">
-              Out of {stats.totalSubjects} subjects
+              {stats.present} regular + {stats.extra * 2} from extra classes
             </p>
           </CardContent>
         </Card>
