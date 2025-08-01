@@ -336,7 +336,8 @@ export default function Dashboard() {
         </CardContent>
       </Card>
 
-
+      {/* Floating Chatbot */}
+      <AttendanceChatbot />
     </div>
   );
 }
