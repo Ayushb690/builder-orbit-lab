@@ -229,7 +229,7 @@ export default function Dashboard() {
           <CardContent>
             <div className="text-2xl font-bold text-info">{stats.extra}</div>
             <p className="text-xs text-muted-foreground">
-              Additional today
+              Counts as {stats.extra * 2} classes
             </p>
           </CardContent>
         </Card>
