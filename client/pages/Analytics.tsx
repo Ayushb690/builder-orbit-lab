@@ -405,13 +405,19 @@ export default function Analytics() {
                     <p className="text-sm text-muted-foreground">
                       {subject.present}P • {subject.absent}A • {subject.extra}E
                     </p>
+                    <p className="text-xs text-info">
+                      Remaining: {subject.remainingRequired} classes
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="text-right">
                     <div className="font-medium">{subject.attendance}%</div>
                     <div className="text-xs text-muted-foreground">
-                      {subject.present + subject.extra}/{subject.totalClasses}
+                      {subject.totalAttendedValue} attended value
+                    </div>
+                    <div className="text-xs text-success">
+                      {subject.originalTotal - subject.remainingRequired} saved from extra
                     </div>
                   </div>
                   <div className="w-20">
