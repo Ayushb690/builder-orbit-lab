@@ -11,7 +11,6 @@ import Layout from "./components/Layout";
 import Setup from "./pages/Setup";
 import Dashboard from "./pages/Dashboard";
 import Calendar from "./pages/Calendar";
-import Subjects from "./pages/Subjects";
 import Analytics from "./pages/Analytics";
 import NotFound from "./pages/NotFound";
 
