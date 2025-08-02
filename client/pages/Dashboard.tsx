@@ -225,11 +225,11 @@ export default function Dashboard() {
           <Button
             variant="destructive"
             onClick={() => {
-              localStorage.removeItem('attendanceApp_subjects');
-              localStorage.removeItem('attendanceApp_timeSlots');
-              localStorage.removeItem('attendanceApp_attendance');
-              localStorage.removeItem('attendanceApp_setupComplete');
-              window.location.href = '/setup';
+              localStorage.removeItem("attendanceApp_subjects");
+              localStorage.removeItem("attendanceApp_timeSlots");
+              localStorage.removeItem("attendanceApp_attendance");
+              localStorage.removeItem("attendanceApp_setupComplete");
+              window.location.href = "/setup";
             }}
           >
             Reset Data
