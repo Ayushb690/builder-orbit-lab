@@ -222,6 +222,18 @@ export default function Dashboard() {
           </p>
         </div>
         <div className="flex gap-2">
+          <Button
+            variant="destructive"
+            onClick={() => {
+              localStorage.removeItem('attendanceApp_subjects');
+              localStorage.removeItem('attendanceApp_timeSlots');
+              localStorage.removeItem('attendanceApp_attendance');
+              localStorage.removeItem('attendanceApp_setupComplete');
+              window.location.href = '/setup';
+            }}
+          >
+            Reset Data
+          </Button>
           <Button asChild variant="outline">
             <Link to="/analytics">
               <BarChart3 className="h-4 w-4 mr-2" />
